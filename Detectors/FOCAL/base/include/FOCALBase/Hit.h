@@ -40,9 +40,9 @@ class Hit : public o2::BasicXYZEHit<float>
   /// \brief Mapped information of a channel
   struct HitID {
     int mParentID;   ///< parentID of the track creating this hit
-    uint8_t mRow;    ///< Row of the hit in the calorimeter
-    uint8_t mColumn; ///< Column of the hit in the calorimeter
-    uint8_t mLayer;  ///< Layer the was hit
+    int mRow;        ///< Row of the hit in the calorimeter
+    int mColumn;     ///< Column of the hit in the calorimeter
+    int mLayer;      ///< Layer the was hit
 
     bool operator==(const HitID& other) const
     {

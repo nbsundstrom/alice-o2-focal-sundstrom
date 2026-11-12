@@ -168,14 +168,14 @@ Hit* Detector::AddHit(int trackID, int primary, double initialEnergy, int detID,
   mHits->emplace_back(primary, trackID, detID, subsystem, initialEnergy, pos, time, eLoss);
 
   auto [isin, col, row, layer, segment] = mGeometry->getVirtualInfo(pos.X(), pos.Y(), pos.Z());
-  mHitIndexMapping.insert(std::pair<Hit::HitID, unsigned int>({trackID, uint8_t(row), uint8_t(col), uint8_t(layer)}, static_cast<unsigned int>(mHits->size() - 1)));
+  mHitIndexMapping.insert(std::pair<Hit::HitID, unsigned int>({trackID, row, col, layer}, static_cast<unsigned int>(mHits->size() - 1)));
 
   return &(mHits->back());
 }
 
 Hit* Detector::FindHit(int parentID, int col, int row, int layer)
 {
-  Hit::HitID hitToFind{parentID, uint8_t(row), uint8_t(col), uint8_t(layer)};
+  Hit::HitID hitToFind{parentID, row, col, layer};
   auto found = mHitIndexMapping.find(hitToFind);
 
   if (found == mHitIndexMapping.end()) {
