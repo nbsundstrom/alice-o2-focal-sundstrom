@@ -128,6 +128,11 @@ class Geometry
   double getFOCALZ0() const { return mGlobal_FOCAL_Z0; }
   int getNumberOfTowersInX() const { return mGlobal_Tower_NX; }
   int getNumberOfTowersInY() const { return mGlobal_Tower_NY; }
+  /// \brief Whether the tower is in the middle row, around the beam pipe: the centre row of an odd number of rows
+  bool isMiddleRowTower(int tower) const
+  {
+    return mGlobal_Tower_NY > 1 && mGlobal_Tower_NY % 2 == 1 && tower / mGlobal_Tower_NX == mGlobal_Tower_NY / 2;
+  }
   double getTowerGapSize() const { return mGlobal_TOWER_TOLX; }
   double getTowerGapSizeX() const { return mGlobal_TOWER_TOLX; }
   double getTowerGapSizeY() const { return mGlobal_TOWER_TOLY; }

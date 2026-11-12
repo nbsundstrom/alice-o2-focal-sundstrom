@@ -17,6 +17,7 @@
 #include "DetectorsBase/Detector.h"
 #include "FOCALBase/Hit.h"
 #include "FOCALBase/Geometry.h"
+#include "FOCALBase/PixelGeometryTGeo.h"
 #include "TGeoManager.h"
 
 class FairVolume;
@@ -173,6 +174,10 @@ class Detector : public o2::base::DetImpl<Detector>
   /// \brief Generate ECAL geometry
   void CreateECALGeometry();
 
+  /// \brief Build the pixel patches (ALPIDE strings and carriers) in the envelope of the PixelPatch composition
+  /// \return patches index-aligned with the tower volumes: left, right, left middle row, right middle row
+  std::vector<TGeoVolume*> createPixelPatches(const Composition& envelope);
+
   /// \brief Add new superparent to the container
   /// \param trackID Track ID of the superparent
   /// \param pdg PDG code of the superparent
@@ -199,7 +204,6 @@ class Detector : public o2::base::DetImpl<Detector>
 
   int mMedSensHCal = 0;    //!<! Sensitive Medium for HCal
   int mMedSensECalPad = 0; //!<! Sensitive Medium for ECal Pads
-  int mMedSensECalPix = 0; //!<! Sensitive Medium for ECal Pixels
 
   std::vector<const Composition*> mGeoCompositions; //!<! list of FOCAL compositions
 
@@ -217,6 +221,7 @@ class Detector : public o2::base::DetImpl<Detector>
 
   std::vector<std::string> mSensitive; //!<! List of sensitive volumes
   int mVolumeIDScintillator = -1;      //!<! Volume ID of the scintillator volume
+  int mVolumeIDPixelSensor = -1;       //!<! Volume ID of the ALPIDE sensor in the pixel layers
 
   template <typename Det>
   friend class o2::base::DetImpl;

@@ -15,15 +15,11 @@
   COMMAND_NUMBER_OF_HCAL_LAYERS 34
   COMMAND_NUMBER_OF_SEGMENTS 54
 # Pixel layers total thickness is 8.5mm as in test beam simulation.
-# TODO: change G10 material to Al and remove copper ground (requires changes in AliFOCALv2.cxx)
+# PixelPatch: ALPIDE strings on aluminium carriers, built by PixelPatch.cxx (flex and spacers not yet included)
+# X/Y fields of PIX entries are legacy: they only set the pixel-wafer bookkeeping size
 # Volume Name             Material    C-X   C-Y     X       Y         Z
   COMPOSITION_PIX_S0       Alloy       0     0     3.0     2.74      0.35
-  COMPOSITION_PIX_S1       G10         0     0     3.0     2.74      0.1
-  COMPOSITION_PIX_S2       Si          0     0     3.0     2.74      0.047
-  COMPOSITION_PIX_S3       SiPix       0     0     3.0     2.74      0.003
-  COMPOSITION_PIX_S4       G10         0     0     3.0     2.74      0.1
-  COMPOSITION_PIX_S5       Cu          0     0     3.0     2.74      0.001
-  COMPOSITION_PIX_S6       Air         0     0     3.0     2.74      0.249
+  COMPOSITION_PIX_S1       PixelPatch  0     0     3.0     2.74      0.5
 COMMAND_INSERT_PIX_AT_L4
 COMMAND_INSERT_PIX_AT_L9
 # COMMAND_INSERT_STR_AT_L4
@@ -38,6 +34,7 @@ COMMAND_INSERT_PIX_AT_L9
   COMPOSITION_FM_S5        SiStripY    0     0     5.    5.      0.05
   COMPOSITION_FM_S6        G10         0     0     5.    5.      0.05
 # PIXEL readout
+# GLOBAL_PIX_OffsetX: distance from the beam-side tower edge to the first chip of a pixel string
   GLOBAL_PIX_NX                  15
   GLOBAL_PIX_NY                  3
   GLOBAL_PIX_OffsetX             1.2

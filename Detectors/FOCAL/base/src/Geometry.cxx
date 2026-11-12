@@ -702,10 +702,10 @@ std::tuple<double, double, double> Geometry::getGeoTowerCenter(int tower, int se
 
   double x = itowerx * dwx + 0.5 * dwx - 0.5 * getFOCALSizeX();
   double y = itowery * dwy + 0.5 * dwy - 0.5 * getFOCALSizeY();
-  if (itowerx == 0 && itowery == 5) {
+  if (itowerx == 0 && isMiddleRowTower(tower)) {
     x -= mGlobal_Middle_Tower_Offset;
   }
-  if (itowerx == 1 && itowery == 5) {
+  if (itowerx == 1 && isMiddleRowTower(tower)) {
     x += mGlobal_Middle_Tower_Offset;
   }
 
