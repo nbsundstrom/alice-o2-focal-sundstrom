@@ -15,6 +15,7 @@ o2_add_executable(digitizer-workflow
                           src/FT0DigitizerSpec.cxx
                           src/FV0DigitizerSpec.cxx
                           src/FDDDigitizerSpec.cxx
+                          src/FOCALDigitizerSpec.cxx
                           src/GRPUpdaterSpec.cxx
                           src/HMPIDDigitizerSpec.cxx
                           src/ITSMFTDigitizerSpec.cxx
@@ -38,11 +39,14 @@ o2_add_executable(digitizer-workflow
                                         O2::FT0Simulation
                                         O2::FV0Simulation
                                         O2::FDDSimulation
+                                        O2::FOCALBase
+                                        O2::FOCALSimulation
                                         O2::CTPSimulation
                                         O2::CTPWorkflowIO
                                         O2::FDDWorkflow
                                         O2::HMPIDSimulation
                                         O2::ITSMFTSimulation
+                                        O2::DataFormatsITSMFT
                                         O2::ITSSimulation
                                         O2::ITSMFTWorkflow
                                         O2::MCHSimulation

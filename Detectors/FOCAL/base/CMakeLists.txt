@@ -14,8 +14,9 @@ o2_add_library(FOCALBase
     src/EventReader.cxx
     src/Geometry.cxx
     src/Hit.cxx
+    src/PixelGeometryTGeo.cxx
     src/TestbeamAnalysis.cxx
-    PUBLIC_LINK_LIBRARIES O2::DataFormatsFOCAL O2::SimulationDataFormat O2::CommonUtils ROOT::RIO ROOT::Tree ROOT::TreePlayer
+    PUBLIC_LINK_LIBRARIES O2::DataFormatsFOCAL O2::ITSMFTBase O2::SimulationDataFormat O2::CommonUtils ROOT::RIO ROOT::Tree ROOT::TreePlayer
     Microsoft.GSL::GSL)
 
 o2_target_root_dictionary(

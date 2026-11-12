@@ -16,3 +16,10 @@ FOC    6   5.e-5  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  -1.  -
 FOC    11  5.e-5  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  -1.  -1    -1    -1    -1     1    -1     3    -1    -1    -1    -1    -1
 * Air
 FOC    13  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  1.e-4  -1.  -1    -1    -1    -1     1    -1     3    -1    -1    -1    -1    -1
+* ALPIDE media of the pixel layers: same values as in the MFT file, the media are shared
+* "ALPIDE_METALSTACK"
+ALPIDE 0   3.e-5  3.e-5  3.e-5  3.e-5  1.e-3  3.e-5  3.e-5  3.e-5  3.e-5  -1.   -1    -1    -1    -1    1     -1    1     -1    -1    -1    -1    -1
+* "ALPIDE_AIR"
+ALPIDE 1   3.e-5  3.e-5  3.e-5  3.e-5  1.e-3  3.e-5  3.e-5  3.e-5  3.e-5  -1.   -1    -1    -1    -1    1     -1    1     -1    -1    -1    -1    -1
+* "ALPIDE_SI"
+ALPIDE 2   3.e-5  3.e-5  3.e-5  3.e-5  1.e-3  3.e-5  3.e-5  3.e-5  3.e-5  -1.   -1    -1    -1    -1    1     -1    1     -1    -1    -1    -1    -1
