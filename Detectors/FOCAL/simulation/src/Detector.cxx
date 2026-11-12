@@ -24,6 +24,7 @@
 #include "FOCALSimulation/Detector.h"
 #include "FOCALBase/Geometry.h"
 #include "FOCALBase/Hit.h"
+#include "FOCALSimulation/FOCALSimParam.h"
 #include "FOCALSimulation/PixelPatch.h"
 
 using namespace o2::focal;
@@ -38,6 +39,7 @@ constexpr std::array<const char*, 4> TowerVolumeNames = {"EMSC1", "EMSC2", "EMSC
 Detector::Detector(bool active, std::string geofilename)
   : o2::base::DetImpl<Detector>("FOC", active),
     mHits(o2::utils::createSimVector<Hit>()),
+    mPixelHits(o2::utils::createSimVector<Hit>()),
     mHitIndexMapping(),
     mGeometry(nullptr),
     mMedSensHCal(-1),
@@ -59,7 +61,9 @@ Detector::Detector(bool active, std::string geofilename)
 }
 
 Detector::Detector(const Detector& rhs)
-  : o2::base::DetImpl<Detector>(rhs)
+  : o2::base::DetImpl<Detector>(rhs),
+    mHits(o2::utils::createSimVector<Hit>()),
+    mPixelHits(o2::utils::createSimVector<Hit>())
 {
   mGeometry = rhs.mGeometry;
   mMedSensHCal = rhs.mMedSensHCal;
@@ -75,6 +79,7 @@ Detector::Detector(const Detector& rhs)
 Detector::~Detector()
 {
   o2::utils::freeSimVector(mHits);
+  o2::utils::freeSimVector(mPixelHits);
 }
 
 Geometry* Detector::getGeometry(std::string name)
@@ -167,6 +172,9 @@ Bool_t Detector::ProcessHits(FairVolume* v)
   // so it is selected by volume as in ITS
   bool flagECALPix = true;
   if (v->getMCid() == mVolumeIDPixelSensor) {
+    if (FOCALSimParam::Instance().recordPixelHits) {
+      ProcessPixelSegment();
+    }
     flagECALPix = ProcessHitsEPix(v);
   }
 
@@ -208,9 +216,75 @@ Parent* Detector::AddSuperparent(int trackID, int pdg, double energy)
 
 void Detector::EndOfEvent() { Reset(); }
 
+void Detector::ProcessPixelSegment()
+{
+  const int track = fMC->GetStack()->GetCurrentTrackNumber();
+  if (fMC->IsTrackEntering() || !mPixelSegment.mStarted || mPixelSegment.mTrack != track) {
+    fMC->TrackPosition(mPixelSegment.mStart[0], mPixelSegment.mStart[1], mPixelSegment.mStart[2]);
+    mPixelSegment.mEnergyLoss = 0.;
+    mPixelSegment.mTrack = track;
+    mPixelSegment.mStarted = true;
+  }
+  mPixelSegment.mEnergyLoss += fMC->Edep();
+  if (!(fMC->IsTrackExiting() || fMC->IsTrackOut() || fMC->IsTrackStop() || fMC->IsTrackDisappeared())) {
+    return;
+  }
+  mPixelSegment.mStarted = false;
+  if (mPixelSegment.mEnergyLoss <= 0.) {
+    return;
+  }
+
+  if (!mPixelGeometry) {
+    mPixelGeometry = PixelGeometryTGeo::Instance();
+  }
+  // current volume: sensor / chip (1) / string (2) / patch, copy = FoCal layer (3) / tower (4)
+  int chipCopy = 0, stringCopy = 0, layerCopy = 0, towerCopy = 0;
+  fMC->CurrentVolOffID(1, chipCopy);
+  fMC->CurrentVolOffID(2, stringCopy);
+  fMC->CurrentVolOffID(3, layerCopy);
+  fMC->CurrentVolOffID(4, towerCopy);
+  const int chip = mPixelGeometry->getChipID(towerCopy, layerCopy, stringCopy, chipCopy);
+  if (chip < 0) {
+    LOG(fatal) << "Unknown FOCAL pixel chip " << chipCopy << " in string " << stringCopy << ", layer " << layerCopy << ", tower " << towerCopy;
+  }
+
+  double stop[3];
+  fMC->TrackPosition(stop[0], stop[1], stop[2]);
+  const double time = fMC->TrackTime() * 1e9; // time in ns
+  const double initialEnergy = mCurrentSuperparent ? mCurrentSuperparent->mEnergy : 0.;
+  // hits are attributed to the incoming (super)parent like the aggregated FOCAL hits
+  mPixelHits->emplace_back(mCurrentPrimaryID, mCurrentParentID, chip, Hit::Subsystem_t::EPIXELS, initialEnergy,
+                           math_utils::Point3D<float>(stop[0], stop[1], stop[2]), time, mPixelSegment.mEnergyLoss * 1e9); // energy in eV
+  mPixelHits->back().setPosStart(math_utils::Point3D<float>(mPixelSegment.mStart[0], mPixelSegment.mStart[1], mPixelSegment.mStart[2]));
+}
+
+std::string Detector::getHitBranchNames(int probe) const
+{
+  if (probe == 0) {
+    return addNameTo("Hit");
+  }
+  if (probe == 1) {
+    return addNameTo("PixelHit");
+  }
+  return std::string();
+}
+
+bool Detector::setHits(int iColl, std::vector<Hit>* hits)
+{
+  if (iColl == 0) {
+    mHits = hits;
+    return true; // FOCPixelHit follows
+  }
+  if (iColl == 1) {
+    mPixelHits = hits;
+  }
+  return false;
+}
+
 void Detector::Register()
 {
   FairRootManager::Instance()->RegisterAny(addNameTo("Hit").data(), mHits, kTRUE);
+  FairRootManager::Instance()->RegisterAny(addNameTo("PixelHit").data(), mPixelHits, kTRUE);
 }
 
 void Detector::Reset()
@@ -218,8 +292,10 @@ void Detector::Reset()
   LOG(debug) << "Cleaning FOCAL hits ...";
   if (!o2::utils::ShmManager::Instance().isOperational()) {
     mHits->clear();
+    mPixelHits->clear();
   }
   mHitIndexMapping.clear();
+  mPixelSegment = PixelSegment();
 
   mSuperParentsIndices.clear();
   mSuperParents.clear();

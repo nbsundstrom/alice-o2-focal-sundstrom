@@ -133,6 +133,12 @@ class Hit : public o2::BasicXYZEHit<float>
   /// \param primary Associated primary particle
   void setPrimary(int primary) { mPrimary = primary; }
 
+  /// \brief Get the entry point of the track segment (pixel hits only, global frame)
+  const math_utils::Point3D<float>& getPosStart() const { return mPosStart; }
+
+  /// \brief Set the entry point of the track segment (pixel hits only, global frame)
+  void setPosStart(const math_utils::Point3D<float>& pos) { mPosStart = pos; }
+
   /// \brief Print information of this hit on the output stream
   /// \param stream Stream to print on
   void printStream(std::ostream& stream) const;
@@ -141,8 +147,9 @@ class Hit : public o2::BasicXYZEHit<float>
   Subsystem_t mSubSystem = Subsystem_t::UNKNOWN; ///< FOCAL subdetector
   int mPrimary = -1;                             ///< Primary particles at the origin of the hit
   double mInitialEnergy = 0.;                    ///< Energy of the parent particle that entered the EMCAL
+  math_utils::Point3D<float> mPosStart;          ///< Segment entry point, set for FOCPixelHit entries
 
-  ClassDefNV(Hit, 1);
+  ClassDefNV(Hit, 2);
 };
 
 /// @brief Sum operator, creating a new hit with the sum of the two energy losses

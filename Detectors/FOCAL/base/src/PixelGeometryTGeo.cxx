@@ -66,6 +66,7 @@ void PixelGeometryTGeo::Build(int loadTrans)
     if (std::string_view(node->GetVolume()->GetName()) != SensorVolumeName) {
       continue;
     }
+    // Detector::ProcessPixelSegment reads the same copy numbers with CurrentVolOffID(1..4)
     const int level = iter.GetLevel();
     if (level != SensorLevel) {
       LOG(fatal) << "FOCAL pixel sensor found at depth " << level << " below the ECAL, expected tower/patch/string/chip/sensor";

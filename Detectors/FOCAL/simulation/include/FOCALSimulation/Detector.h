@@ -112,8 +112,18 @@ class Detector : public o2::base::DetImpl<Detector>
     if (iColl == 0) {
       return mHits;
     }
+    if (iColl == 1) {
+      return mPixelHits;
+    }
     return nullptr;
   }
+
+  /// \brief Names of the hit branches: FOCHit (aggregated cells) and FOCPixelHit (pixel-chip segments)
+  std::string getHitBranchNames(int probe) const override;
+
+  /// \brief Assign hit containers (used with shared-memory hit buffers)
+  /// \return true if further hit collections follow
+  bool setHits(int iColl, std::vector<Hit>* hits);
 
   /// \brief Clean point collection
   void Reset() final;
@@ -192,6 +202,10 @@ class Detector : public o2::base::DetImpl<Detector>
   /// \param v Current sensitive volume
   bool ProcessHitsEPix(FairVolume* v = nullptr);
 
+  /// \brief Track the entry/exit segment of the current track in an ALPIDE sensor and
+  /// store it as FOCPixelHit of that chip (input of the pixel digitizer)
+  void ProcessPixelSegment();
+
   /// \brief Processing hit creation in the HCAL sensitive volume
   /// \param v Current sensitive volume
   bool ProcessHitsHCAL(FairVolume* v = nullptr);
@@ -208,6 +222,7 @@ class Detector : public o2::base::DetImpl<Detector>
   std::vector<const Composition*> mGeoCompositions; //!<! list of FOCAL compositions
 
   std::vector<o2::focal::Hit>* mHits;                                              ///< Container with hits
+  std::vector<o2::focal::Hit>* mPixelHits;                                         ///< Container with pixel-chip segments
   std::unordered_map<Hit::HitID, unsigned int, Hit::HitIDHasher> mHitIndexMapping; ///< Mapping the hits to a cell in the detector
 
   std::unordered_map<int, int> mSuperParentsIndices; //!<! Super parent indices (track index - superparent index)
@@ -223,9 +238,17 @@ class Detector : public o2::base::DetImpl<Detector>
   int mVolumeIDScintillator = -1;      //!<! Volume ID of the scintillator volume
   int mVolumeIDPixelSensor = -1;       //!<! Volume ID of the ALPIDE sensor in the pixel layers
 
+  struct PixelSegment {
+    bool mStarted = false;                           //!<! segment open for the current track
+    int mTrack = -1;                                 //!<! track owning the open segment
+    double mStart[3] = {0., 0., 0.};                 //!<! global entry point (cm)
+    double mEnergyLoss = 0.;                         //!<! deposited energy (GeV)
+  } mPixelSegment;                                   //!<!
+  const PixelGeometryTGeo* mPixelGeometry = nullptr; //!<! chip view of the pixel layers, built on first use
+
   template <typename Det>
   friend class o2::base::DetImpl;
-  ClassDefOverride(Detector, 1);
+  ClassDefOverride(Detector, 2);
 };
 } // namespace o2::focal
 

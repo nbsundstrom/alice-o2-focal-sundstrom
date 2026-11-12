@@ -11,8 +11,9 @@
 
 o2_add_library(FOCALSimulation
     SOURCES src/Detector.cxx
+    src/FOCALSimParam.cxx
     src/PixelPatch.cxx
-    PUBLIC_LINK_LIBRARIES ROOT::TreePlayer O2::FOCALBase O2::DetectorsBase O2::SimConfig O2::SimulationDataFormat O2::Headers O2::DataFormatsFOCAL
+    PUBLIC_LINK_LIBRARIES ROOT::TreePlayer O2::FOCALBase O2::DetectorsBase O2::CommonUtils O2::SimConfig O2::SimulationDataFormat O2::Headers O2::DataFormatsFOCAL
     O2::ITSMFTBase O2::ITSMFTSimulation
     AliceO2::InfoLogger
     Microsoft.GSL::GSL)
@@ -20,6 +21,7 @@ o2_add_library(FOCALSimulation
 o2_target_root_dictionary(
     FOCALSimulation
     HEADERS include/FOCALSimulation/Detector.h
+    include/FOCALSimulation/FOCALSimParam.h
 )
 
 o2_data_file(COPY geometryFiles  DESTINATION Detectors/Geometry/FOC/)
