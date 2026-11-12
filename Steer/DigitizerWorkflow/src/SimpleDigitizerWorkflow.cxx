@@ -106,6 +106,10 @@
 #include "CPVDigitizerSpec.h"
 #include "CPVDigitWriterSpec.h"
 
+// for FOCAL (pixel layers)
+#include "FOCALDigitizerSpec.h"
+#include "FOCALDigitWriterSpec.h"
+
 // for ZDC
 #include "ZDCDigitizerSpec.h"
 #include "ZDCWorkflow/ZDCDigitWriterDPLSpec.h"
@@ -825,6 +829,15 @@ WorkflowSpec defineDataProcessing(ConfigContext const& configcontext)
     digitizerSpecs.emplace_back(o2::cpv::getCPVDigitizerSpec(fanoutsize++, mctruth));
     // add PHOS writer
     writerSpecs.emplace_back(o2::cpv::getCPVDigitWriterSpec(mctruth));
+  }
+
+  // the FOCAL part (pixel layers only)
+  if (isEnabled(o2::detectors::DetID::FOC)) {
+    detList.emplace_back(o2::detectors::DetID::FOC);
+    // connect the FOCAL pixel digitization
+    digitizerSpecs.emplace_back(o2::focal::getFOCALDigitizerSpec(fanoutsize++, mctruth));
+    // connect the FOCAL digit writer
+    writerSpecs.emplace_back(o2::focal::getFOCALDigitWriterSpec(mctruth));
   }
   // the CTP part
   if (isEnabled(o2::detectors::DetID::CTP)) {

@@ -17,6 +17,8 @@
 
 #pragma link C++ class o2::focal::FOCALSimParam + ;
 #pragma link C++ class o2::conf::ConfigurableParamHelper < o2::focal::FOCALSimParam> + ;
+#pragma link C++ class o2::focal::FOCALDigitizerParam + ;
+#pragma link C++ class o2::conf::ConfigurableParamHelper < o2::focal::FOCALDigitizerParam> + ;
 #pragma link C++ class o2::focal::Detector + ;
 #pragma link C++ class o2::base::DetImpl < o2::focal::Detector> + ;
 
